@@ -1,19 +1,85 @@
 <html>
  <head>
   <script>
+   
+   
+   gameBoard=[
+    [
+    []/*sector A1*/[]/*sector A2*/[]/*sector A3*/[]/*sector A4*/[]/*sector A5*/
+    ]//sector row A
+    ,
+    [
+    []/*sector B1*/[]/*sector B2*/[]/*sector B3*/[]/*sector B4*/[]/*sector B5*/
+    ]//sector row B
+    ,
+    [
+    []/*sector C1*/[]/*sector C2*/[]/*sector C3*/[]/*sector C4*/[]/*sector C5*/
+    ]//sector row C
+    ,
+    [
+    [],/*sector D1*/[],/*sector D2*/[],/*sector D3*/[],/*sector D4*/[],/*sector D5*/
+    ]//sector row D
+    ,
+    [
+    [],/*sector E1*/[],/*sector E2*/[],/*sector E3*/[],/*sector E4*/[],/*sector E5*/
+    ]//sector row E
+    ]//entire universe
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   activeScreen=0//0=blank;1=Diplomacy;2=production;3=Intelligence
    Host=String(prompt('Host and port:','localhost:8090'))
    var connection = new WebSocket('ws://'+Host, ['soap', 'xmpp']);
    connection.onmessage= function(e){
-   console.log('Got: '+e.data+'\n')
+    console.log('Got: '+e.data+'\n')
    }
+   
+   function sendClick(e){
+    clix=String(e.clientX-9)
+    cliy=String(e.clientY-9)
+    screen=String(activeScreen)
+    while(cliy.length<4){clix='0'+clix;}
+    while(clix.length<4){cliy='0'+cliy;}
+    connection.send(clix+cliy+screen)
+   }
+   
   </script>
  </head>
  <body>
-  <canvas width=1000px height=1000px id="theCanvas">Your browser does not support the &lt;canvas> element</canvas>
+  <canvas width=1000px height=1000px id="theCanvas" onclick="sendClick(event);">Your browser does not support the &lt;canvas> element</canvas>
   <br>
-  <button>Diplomacy</button>
-  <button>Production</button>
-  <button>Intelligence</button>
+  <button onclick="activeScreen=1">Diplomacy</button>
+  <button onclick="activeScreen=2">Production</button>
+  <button onclick="activeScreen=3">Intelligence</button>
   <br>
   <input type="text"></input><button>Send Chat</button>
   <br>
