@@ -1,1 +1,22 @@
- 
+<html>
+ <head>
+  <script>
+   Host=String(prompt('Host and port:','localhost:8090'))
+   var connection = new WebSocket('ws://'+Host, ['soap', 'xmpp']);
+   connection.onmessage= function(e){
+   console.log('Got: '+e.data+'\n')
+   }
+  </script>
+ </head>
+ <body>
+  <canvas width=1000px height=1000px id="theCanvas">Your browser does not support the &lt;canvas> element</canvas>
+  <br>
+  <button>Diplomacy</button>
+  <button>Production</button>
+  <button>Intelligence</button>
+  <br>
+  <input type="text"></input><button>Send Chat</button>
+  <br>
+  <textarea rows="10" cols="50" readonly></textarea>
+ </body>
+</html>
