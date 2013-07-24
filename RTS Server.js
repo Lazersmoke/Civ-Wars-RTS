@@ -1,3 +1,8 @@
+var PORT=158
+var MAPCODE=''
+
+
+
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 
@@ -31,3 +36,4 @@ wsServer.on('request', function(request) {
   connection.on('close', function(reasonCode, description) {
   console.log(connection.remoteAddress+"diconected because: "+reasonCode+";"+description)
   }
+}
