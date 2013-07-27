@@ -4,14 +4,14 @@
 <link rel="stylesheet" href="mainstyle.css">
 <script>
 var selected=[0,0]
-//parsecs=[Owner,current:[small craft,frigates,cruisers,battleships],commerce,commerce spread:0=full income 1=full production,production spread of:[small craft,frigates,cruisers,battleships](totals to production amount),progress on:[small craft,frigates,cruisers,battleships],production,income,upkeep]
-var gameBoard=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+//parsecs=[Owner,current:[small craft,frigates,cruisers,battleships],commerce,commerce spread:0=full income 1=full production,production focus:0 1 2 or 3,progress on:[small craft,frigates,cruisers,battleships],production,income,upkeep]
+var gameBoard=[[],[],[],[],[]]
 
 function changeWidth(amount){
 amount=Math.floor(amount)
 for(var x=0;x<amount;x++){
 for(var y=0;y<gameBoard.length;y++){
-gameBoard[y].push([0,[0,0,0,0],0,0.5,[0.25,0.25,0.25,0.25],[0,0,0,0],0,0,0])
+gameBoard[y].push([0,[0,0,0,0],0,0.5,0,[0,0,0,0],0,0,0])
 }
 }
 //workspace.width+=amount*100
@@ -21,7 +21,7 @@ function changeHeight(amount){
 amount=Math.floor(amount)
 var addition=[]
 for(var x=0;x<gameBoard[0].length;x++){
-addition.push([0,[0,0,0,0],0,0.5,[0,0,0,0],[0,0,0,0],0,0,0])
+addition.push([0,[0,0,0,0],0,0.5,0,[0,0,0,0],0,0,0])
 }
 for(var x=0;x<amount;x++){
 gameBoard.push(addition)
@@ -42,57 +42,14 @@ document.getElementById('selectedBattleships').value=gameBoard[selected[0]][sele
 document.getElementById('selectedCommerce').value=gameBoard[selected[0]][selected[1]][2]
 document.getElementById('selectedSpreadOutput').value=gameBoard[selected[0]][selected[1]][3]
 document.getElementById('selectedSpreadSlider').value=gameBoard[selected[0]][selected[1]][3]
-document.getElementById('selectedProductionSpreadSmallCraftOutput').value=gameBoard[selected[0]][selected[1]][4][0]
-document.getElementById('selectedProductionSpreadSmallCraftSlider').value=gameBoard[selected[0]][selected[1]][4][0]
-document.getElementById('selectedProductionSpreadFrigatesOutput').value=gameBoard[selected[0]][selected[1]][4][1]
-document.getElementById('selectedProductionSpreadFrigatesSlider').value=gameBoard[selected[0]][selected[1]][4][1]
-document.getElementById('selectedProductionSpreadCruisersOutput').value=gameBoard[selected[0]][selected[1]][4][2]
-document.getElementById('selectedProductionSpreadCruisersSlider').value=gameBoard[selected[0]][selected[1]][4][2]
-document.getElementById('selectedProductionSpreadBattleshipsOutput').value=gameBoard[selected[0]][selected[1]][4][3]
-document.getElementById('selectedProductionSpreadBattleshipsSlider').value=gameBoard[selected[0]][selected[1]][4][3]
+document.getElementById('selectedProductionFocus').value=gameBoard[selected[0]][selected[1]][4]
 document.getElementById('selectedProgressSmallCraft').value=gameBoard[selected[0]][selected[1]][5][0]
 document.getElementById('selectedProgressFrigates').value=gameBoard[selected[0]][selected[1]][5][1]
 document.getElementById('selectedProgressCruisers').value=gameBoard[selected[0]][selected[1]][5][2]
 document.getElementById('selectedProgressBattleships').value=gameBoard[selected[0]][selected[1]][5][3]
 document.getElementById('selectedProduction').value=gameBoard[selected[0]][selected[1]][6]
 document.getElementById('selectedIncome').value=gameBoard[selected[0]][selected[1]][7]
-document.getElementById('selectedProductionSpreadSmallCraftSlider').max=String(document.getElementById('selectedProduction').value);
-document.getElementById('selectedProductionSpreadFrigatesSlider').max=String(document.getElementById('selectedProduction').value);
-document.getElementById('selectedProductionSpreadCruisersSlider').max=String(document.getElementById('selectedProduction').value);
-document.getElementById('selectedProductionSpreadBattleshipsSlider').max=String(document.getElementById('selectedProduction').value);
-Draw();
-}
-function adjustProductionSpread(myOwnID){
-var otherIDs=['selectedProductionSpreadSmallCraftSlider','selectedProductionSpreadFrigatesSlider','selectedProductionSpreadCruisersSlider','selectedProductionSpreadBattleshipsSlider']
-myOwnID=otherIDs.splice(otherIDs.indexOf(myOwnID),1)
-var sliderA=document.getElementById(otherIDs[0])
-var sliderB=document.getElementById(otherIDs[1])
-var sliderC=document.getElementById(otherIDs[2])
-var sliderSelf=document.getElementById(myOwnID)
-var totalValue=
-sliderA.value+
-sliderB.value+
-sliderC.value+
-sliderSelf.value;
-var totalProduction=document.getElementById('selectedProduction').value;
-
-if(totalValue>totalProduction){
-var diff=totalValue-totalProduction
-sliderA.value-=diff/3
-sliderB.value-=diff/3
-sliderC.value-=diff/3
-}
-else if(totalValue<totalProduction){
-var diff=totalProduction-totalValue
-sliderA.value+=diff/3
-sliderB.value+=diff/3
-sliderC.value+=diff/3
-}
-document.getElementById('selectedProductionSpreadSmallCraftOutput').value=document.getElementById('selectedProductionSpreadSmallCraftSlider').value;
-document.getElementById('selectedProductionSpreadFrigatesOutput').value=document.getElementById('selectedProductionSpreadFrigatesSlider').value;
-document.getElementById('selectedProductionSpreadCruisersOutput').value=document.getElementById('selectedProductionSpreadCruisersSlider').value;
-document.getElementById('selectedProductionSpreadBattleshipsOutput').value=document.getElementById('selectedProductionSpreadBattleshipsSlider').value;
-//if(totalValue!=totalCommerce){adjustProductionSpread();}
+document.getElementById('selectedUpkeep').value=gameBoard[selected[0]][selected[1]][8]
 }
 function Draw(){
 workspace.width=workspace.width
@@ -142,23 +99,17 @@ ctx.fillRect(coord[0],coord[1],coord[2],coord[3])
 
 //commerce
 ctx.font="30px Georgia"
-ctx.fillStyle="#007F00"
-ctx.fillText(String(gameBoard[x][y][2]),coord[0]+2,coord[1]+90)
-//commerce spread
 var redAmount=String(Math.floor(Number(255*gameBoard[x][y][3])))
 var blueAmount=String(Math.floor(Number(255*(1-gameBoard[x][y][3]))))
-ctx.fillStyle="rgba("+redAmount+",0,"+blueAmount+",0.5)"
-ctx.fillRect(coord[0],coord[1]+60,coord[0]+20,coord[1]+100)
+ctx.fillStyle="rgba("+redAmount+",255,"+blueAmount+",0.5)"
+ctx.fillText(String(gameBoard[x][y][2]),coord[0]+2,coord[1]+90)
 
-//build spread
-//build progress
-/*
-ctx.beginPath();
-ctx.arc(coord[0]+80,coord[1]+20,20,0,2*(gameBoard[x][y][3])*Math.PI,false)
-ctx.lineTo(coord[0]+80,coord[1]+20)
-ctx.lineTo(coord[0]+100,coord[1]+20)
-ctx.fill();
-*/
+//upkeep
+ctx.font="30px Georgia"
+ctx.fillStyle="#7FFF7F"
+ctx.fillText(String(gameBoard[x][y][8]),coord[0]+80,coord[1]+90)
+
+//grid
 ctx.strokeStyle="#000000"
 ctx.strokeRect(coord[0],coord[1],coord[2],coord[3])
 
@@ -178,7 +129,7 @@ delete grd
 </script>
 </head>
 <body>
-<canvas width="2500px" height="2500px" id="workspace" onclick="Clicky(event)">You should get Nightly!</canvas>
+<canvas width="500px" height="500px" id="workspace" onclick="Clicky(event)">You should get Nightly!</canvas>
 <!--
 <br>
 <button onclick="changeWidth(Number(document.getElementById('widthAmount').value))">Change Width</button><input type="text" id="widthAmount">Number of squares</input>
@@ -186,7 +137,7 @@ delete grd
 <button onclick="changeHeight(Number(document.getElementById('heightAmount').value))">Change Height</button><input type="text" id="heightAmount">Number of squares</input>
 -->
 <br>
-<div style="position:abosolute;top:9px;right:9px;">
+<div>
 <table>
 <tr>
 <th>
@@ -202,7 +153,7 @@ Commerce
 Commerce Spread
 </th>
 <th>
-Production Spread
+Production Focus
 </th>
 <th>
 Build Progress
@@ -213,10 +164,13 @@ Production
 <th>
 Income
 </th>
+<th>
+Upkeep
+</th>
 </tr>
 <tr>
 <td>
-<select id="selectedOwner" onclick="gameBoard[selected[1]][selected[0]][0]=document.getElementById('selectedOwner').value;Draw();">
+<select id="selectedOwner" onclick="gameBoard[selected[0]][selected[1]][0]=document.getElementById('selectedOwner').value;Draw();">
   <option value=0>Unowned</option>
   <option value=1>Blue</option>
   <option value=2>Red</option>
@@ -231,20 +185,20 @@ Income
 </td>
 <td>
 <input type="text" id="selectedCommerce"></input><br>
-<button onclick="gameBoard[selected[0]][selected[1]][2]=Number(document.getElementById('selectedCommerce').value);document.getElementById('selectedIncome').value=document.getElementById('selectedSpreadOutput').value*document.getElementById('selectedCommerce').value;document.getElementById('selectedProduction').value=(1-document.getElementById('selectedSpreadOutput').value)*document.getElementById('selectedCommerce').value;document.getElementById('selectedProductionSpreadSmallCraftSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadFrigatesSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadCruisersSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadBattleshipsSlider').max=String(document.getElementById('selectedProduction').value);Draw();">Set</button>
+<button onclick="gameBoard[selected[0]][selected[1]][2]=Number(document.getElementById('selectedCommerce').value);document.getElementById('selectedIncome').value=document.getElementById('selectedSpreadOutput').value*document.getElementById('selectedCommerce').value;document.getElementById('selectedProduction').value=(1-document.getElementById('selectedSpreadOutput').value)*document.getElementById('selectedCommerce').value;Draw();">Set</button>
 </td>
 <td>
 <span>Income<input type="range" min="0" max="1" step=0.01 onchange="document.getElementById('selectedSpreadOutput').value=String(document.getElementById('selectedSpreadSlider').value)" id="selectedSpreadSlider">Production</span>
 <br>
 <input type="text" id="selectedSpreadOutput"></input><br>
-<button onclick="gameBoard[selected[0]][selected[1]][3]=Number(document.getElementById('selectedSpreadOutput').value);Draw();document.getElementById('selectedIncome').value=(1-document.getElementById('selectedSpreadOutput').value)*document.getElementById('selectedCommerce').value;document.getElementById('selectedProduction').value=document.getElementById('selectedSpreadOutput').value*document.getElementById('selectedCommerce').value;document.getElementById('selectedProductionSpreadSmallCraftSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadFrigatesSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadCruisersSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadBattleshipsSlider').max=String(document.getElementById('selectedProduction').value);">Set</button>
+<button onclick="gameBoard[selected[0]][selected[1]][3]=Number(document.getElementById('selectedSpreadOutput').value);Draw();document.getElementById('selectedIncome').value=(1-document.getElementById('selectedSpreadOutput').value)*document.getElementById('selectedCommerce').value;document.getElementById('selectedProduction').value=document.getElementById('selectedSpreadOutput').value*document.getElementById('selectedCommerce').value;">Set</button>
 </td>
 <td>
-<input type="range" min="0" max="0" step=0.01 onchange="adjustProductionSpread('selectedProductionSpreadSmallCraftSlider');document.getElementById('selectedProductionSpreadSmallCraftOutput').value=document.getElementById('selectedProductionSpreadSmallCraftSlider').value" id="selectedProductionSpreadSmallCraftSlider"></input><input type="text" id="selectedProductionSpreadSmallCraftOutput"></input>Small Craft<br>
-<input type="range" min="0" max="0" step=0.01 onchange="adjustProductionSpread('selectedProductionSpreadFrigatesSlider');document.getElementById('selectedProductionSpreadFrigatesOutput').value=document.getElementById('selectedProductionSpreadFrigatesSlider').value" id="selectedProductionSpreadFrigatesSlider"></input><input type="text" id="selectedProductionSpreadFrigatesOutput"></input>Frigates<br>
-<input type="range" min="0" max="0" step=0.01 onchange="adjustProductionSpread('selectedProductionSpreadCruisersSlider');document.getElementById('selectedProductionSpreadCruisersOutput').value=document.getElementById('selectedProductionSpreadCruisersSlider').value" id="selectedProductionSpreadCruisersSlider"></input><input type="text" id="selectedProductionSpreadCruisersOutput"></input>Cruisers<br>
-<input type="range" min="0" max="0" step=0.01 onchange="adjustProductionSpread('selectedProductionSpreadBattleshipsSlider');document.getElementById('selectedProductionSpreadBattleshipsOutput').value=document.getElementById('selectedProductionSpreadBattleshipsSlider').value" id="selectedProductionSpreadBattleshipsSlider"></input><input type="text" id="selectedProductionSpreadBattleshipsOutput"></input>Battleships<br>
-
+<select id="selectedProductionFocus" onclick="gameBoard[selected[0]][selected[1]][4]=document.getElementById('selectedProductionFocus').value;Draw();">
+  <option value=0>Small Craft</option>
+  <option value=1>Frigates</option>
+  <option value=2>Cruisers</option>
+  <option value=3>Battleships</option>
 </td>
 <td>
 <input type="text" id="selectedProgressSmallCraft">Small Craft</input><br>
@@ -254,20 +208,23 @@ Income
 <button onclick="gameBoard[selected[0]][selected[1]][5]=[Number(document.getElementById('selectedProgressSmallCraft').value),Number(document.getElementById('selectedProgressFrigates').value),Number(document.getElementById('selectedProgressCruisers').value),Number(document.getElementById('selectedProgressBattleships').value);Draw();">Set</button>
 </td>
 <td>
-<input type="text" id="selectedProduction" onchange="gameBoard[selected[0]][selected[1]][6]=document.getElementById('selectedProduction').value;document.getElementById('selectedProductionSpreadSmallCraftSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadFrigatesSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadCruisersSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadBattleshipsSlider').max=String(document.getElementById('selectedProduction').value);"></input>
+<input type="text" id="selectedProduction" readonly onchange="gameBoard[selected[0]][selected[1]][6]=document.getElementById('selectedProduction').value;document.getElementById('selectedProductionSpreadSmallCraftSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadFrigatesSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadCruisersSlider').max=String(document.getElementById('selectedProduction').value);document.getElementById('selectedProductionSpreadBattleshipsSlider').max=String(document.getElementById('selectedProduction').value);"></input>
 </td>
 <td>
-<input type="text" id="selectedIncome" onchange="gameBoard[selected[0]][selected[1]][7]=document.getElementById('selectedIncome').value">
+<input type="text" id="selectedIncome" onchange="gameBoard[selected[0]][selected[1]][7]=document.getElementById('selectedIncome').value" readonly></input>
+</td>
+<td>
+<input type="text" id="selectedUpkeep" onchange="gameBoard[selected[0]][selected[1]][8]=document.getElementById('selectedUpkeep').value;Draw();"></input>
 </td>
 </tr>
 </table>
 <input type="text" id="output"></input>
-<button onclick="document.getElementById('output').value='['+String(gameBoard)+']'">Generate</button>
+<button onclick="document.getElementById('output').value=JSON.stringify(gameBoard)">Generate</button>
 </div>
 <script>
 var workspace=document.getElementById('workspace')
 var ctx=workspace.getContext('2d')
-changeWidth(25);
+changeWidth(5);
 Draw();
 </script>
 </body>
