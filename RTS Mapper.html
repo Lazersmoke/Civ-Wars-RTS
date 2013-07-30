@@ -97,6 +97,14 @@ ctx.fillStyle="#3F3F3F"
 ctx.fillRect(coord[0],coord[1],coord[2],coord[3])
 }
 
+//build focus
+var focusCenter=25*(gameBoard[x][y][4]+1)
+var grd=ctx.createRadialGradient(focusCenter,20,5,focusCenter,20,30)
+grd.addColorStop(0,"green")
+grd.addColorStop(1,"rgba(0,0,0,0)")
+ctx.fillStyle=grd
+ctx.fillRect(coord[0],coord[1],coord[2],coord[3])
+
 //commerce
 ctx.font="30px Georgia"
 var redAmount=String(Math.floor(Number(255*gameBoard[x][y][3])))
